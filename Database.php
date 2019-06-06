@@ -15,7 +15,7 @@ class Database
 {
 
     private $sql;
-    private $mysql;
+    private $mysqli;
     private $result;
     private $result_rows;
     private $database_name;
@@ -42,10 +42,10 @@ class Database
         self::$instance = $this;
 
         $this->database_name = $database_name;
-        $this->mysql = mysqli_connect($host, $username, $password, $database_name);
-        $this->mysql->set_charset('utf8');
+        $this->mysqli = mysqli_connect($host, $username, $password, $database_name);
+        $this->mysqli->set_charset('utf8');
 
-        if (!$this->mysql) {
+        if (!$this->mysqli) {
             throw new DatabaseException('Database connection error: ' . mysqli_connect_error());
         }
     }
@@ -167,10 +167,10 @@ class Database
         $this->sql = $query;
 
         $this->result_rows = null;
-        $this->result = mysqli_query($this->mysql, $query);
+        $this->result = mysqli_query($this->mysqli, $query);
 
-        if (mysqli_error($this->mysql) != '') {
-            $this->_error(mysqli_error($this->mysql));
+        if (mysqli_error($this->mysqli) != '') {
+            $this->_error(mysqli_error($this->mysqli));
             $this->result = null;
             return $this;
         }
@@ -353,7 +353,7 @@ class Database
      */
     function table_exists($name)
     {
-        $res = mysqli_query($this->mysql, "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = '" . $this->escape($this->database_name) . "' AND table_name = '" . $this->escape($name) . "'");
+        $res = mysqli_query($this->mysqli, "SELECT COUNT(*) AS count FROM information_schema.tables WHERE table_schema = '" . $this->escape($this->database_name) . "' AND table_name = '" . $this->escape($name) . "'");
         return ($this->mysqli_result($res, 0) == 1);
     }
 
@@ -425,9 +425,9 @@ class Database
             return $query;
         }
         $this->sql = $query;
-        $this->result = mysqli_query($this->mysql, $query);
-        if (mysqli_error($this->mysql) != '') {
-            $this->_error(mysqli_error($this->mysql));
+        $this->result = mysqli_query($this->mysqli, $query);
+        if (mysqli_error($this->mysqli) != '') {
+            $this->_error(mysqli_error($this->mysqli));
             $this->result = null;
             return false;
         } else {
@@ -484,9 +484,9 @@ class Database
             $query .= ' LIMIT ' . $limit;
         }
         $this->sql = $query;
-        $this->result = mysqli_query($this->mysql, $query);
-        if (mysqli_error($this->mysql) != '') {
-            $this->_error(mysqli_error($this->mysql));
+        $this->result = mysqli_query($this->mysqli, $query);
+        if (mysqli_error($this->mysqli) != '') {
+            $this->_error(mysqli_error($this->mysqli));
             $this->result = null;
             return false;
         } else {
@@ -527,9 +527,9 @@ class Database
         }
         $this->sql = $query;
 
-        $this->result = mysqli_query($this->mysql, $query);
-        if (mysqli_error($this->mysql) != '') {
-            $this->_error(mysqli_error($this->mysql));
+        $this->result = mysqli_query($this->mysqli, $query);
+        if (mysqli_error($this->mysqli) != '') {
+            $this->_error(mysqli_error($this->mysqli));
             $this->result = null;
             return false;
         } else {
@@ -544,7 +544,7 @@ class Database
      */
     public function id()
     {
-        return mysqli_insert_id($this->mysql);
+        return mysqli_insert_id($this->mysqli);
     }
 
     /**
@@ -554,7 +554,7 @@ class Database
      */
     public function affected()
     {
-        return mysqli_affected_rows($this->mysql);
+        return mysqli_affected_rows($this->mysqli);
     }
 
     /**
@@ -565,7 +565,7 @@ class Database
      */
     public function escape($str)
     {
-        return mysqli_real_escape_string($this->mysql, $str);
+        return mysqli_real_escape_string($this->mysqli, $str);
     }
 
     /**
@@ -575,7 +575,7 @@ class Database
      */
     public function error()
     {
-        return mysqli_error($this->mysql);
+        return mysqli_error($this->mysqli);
     }
 
     /**
